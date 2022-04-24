@@ -28,14 +28,11 @@ public class EmployeeServiceImpl implements EmployeeService{
     public Optional<Employee> findById(int theId) {
         Optional<Employee> result = employeeRepository.findById(theId);
 
-        Employee theEmployee =null;
-
         if(result.isPresent()) {
-            theEmployee = result.get();
+            return result;
         }else {
             throw new RuntimeException("Did not find employee id - "+theId);
         }
-        return Optional.of(theEmployee);
     }
 
     @Override

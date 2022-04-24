@@ -31,20 +31,22 @@ public class EmployeeRestController {
     public Optional<Employee> getEmployee(@PathVariable int employeeId){
 
         Optional<Employee> theEmployee = employeeService.findById(employeeId);
-        if(theEmployee==null){
+        if(theEmployee.isPresent()) {
+            return theEmployee;
+        }else{
             throw new RuntimeException("Employee id not found - "+employeeId);
         }
+    }
+
+    //add mapping for POST "/employee" and add a new employee
+    @PostMapping("/employees")
+    public Employee addEmployee(@RequestBody Employee theEmployee){
+        //just in case they pass an id in JSON ... set id to 0
+        //this is to force a save of new item ... instead of update
+        theEmployee.setId(0);
+        employeeService.save(theEmployee);
         return theEmployee;
     }
-//    //add mapping for POST "/employee" and add a new employee
-//    @PostMapping("/employees")
-//    public Employee addEmployee(@RequestBody Employee theEmployee){
-//        //just in case they pass an id in JSON ... set id to 0
-//        //this is to force a save of new item ... instead of update
-//        theEmployee.setId(0);
-//        employeeService.save(theEmployee);
-//        return theEmployee;
-//    }
 
     ///add mapping for PUT "/employees" update existing employee
     @PutMapping("/employees")
@@ -55,16 +57,17 @@ public class EmployeeRestController {
     }
 
     @DeleteMapping("/employees/{employeeId}")
-    public String deleteById(@PathVariable int employeeId){
+    public String deleteEmployee(@PathVariable int employeeId){
 
         Optional<Employee> tempEmployee =employeeService.findById(employeeId);
 
         //throw exception if null
-        if(tempEmployee==null) {
+        if(tempEmployee.isPresent()) {
+            employeeService.deleteById(employeeId);
+            return "Employee with ID: " + employeeId + " has been deleted";
+        }else{
             throw new RuntimeException("Employee id not found -"+employeeId);
         }
-        employeeService.deleteById(employeeId);
-        return "Employee with ID: " + employeeId+" has been deleted";
     }
 
 }
