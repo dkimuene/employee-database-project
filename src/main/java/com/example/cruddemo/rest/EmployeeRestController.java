@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("employees")
 public class EmployeeRestController {
 
     private EmployeeService employeeService;
@@ -21,13 +21,13 @@ public class EmployeeRestController {
     }
 
     //add mapping GET "/employee" and return list of employees
-    @GetMapping("/employees")
+    @GetMapping("/all")
     public List<Employee> findAll(){
         return employeeService.findAll();
     }
 
     //add mapping GET "/employee/{employeeId}" and return an employee
-    @GetMapping("/employees/{employeeId}")
+    @GetMapping("/find/{employeeId}")
     public Optional<Employee> getEmployee(@PathVariable int employeeId){
 
         Optional<Employee> theEmployee = employeeService.findById(employeeId);
@@ -39,7 +39,7 @@ public class EmployeeRestController {
     }
 
     //add mapping for POST "/employee" and add a new employee
-    @PostMapping("/employees")
+    @PostMapping("/add")
     public Employee addEmployee(@RequestBody Employee theEmployee){
         //just in case they pass an id in JSON ... set id to 0
         //this is to force a save of new item ... instead of update
@@ -49,22 +49,22 @@ public class EmployeeRestController {
     }
 
     ///add mapping for PUT "/employees" update existing employee
-    @PutMapping("/employees")
+    @PutMapping("/update")
     public Employee updateEmployee(@RequestBody Employee theEmployee){
 
         employeeService.save(theEmployee);
         return theEmployee;
     }
 
-    @DeleteMapping("/employees/{employeeId}")
-    public String deleteEmployee(@PathVariable int employeeId){
+    @DeleteMapping("/delete/{employeeId}")
+    public Optional<Employee> deleteEmployee(@PathVariable int employeeId){
 
         Optional<Employee> tempEmployee =employeeService.findById(employeeId);
 
         //throw exception if null
         if(tempEmployee.isPresent()) {
             employeeService.deleteById(employeeId);
-            return "Employee with ID: " + employeeId + " has been deleted";
+            return tempEmployee;
         }else{
             throw new RuntimeException("Employee id not found -"+employeeId);
         }
